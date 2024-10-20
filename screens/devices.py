@@ -2,7 +2,7 @@ import streamlit as st
 from PIL import Image
 
 def second_screen():
-    st.image("F:\\lablab_hackathon\\Edge Runner\\screens\\assets\\logo.jpg", width=150)  # Placeholder for the logo
+    st.image("screens/assets/logo.jpg", width=150)  # Placeholder for the logo
     
     # Menu bar
     st.markdown("""
@@ -19,7 +19,7 @@ def second_screen():
     
     # Router selection
     with col1:
-        router_img = Image.open("F:\\lablab_hackathon\\Edge Runner\\screens\\assets\\router.jpg")
+        router_img = Image.open("screens/assets/router.jpg")
         st.image(router_img, caption="Router")
         if st.button("Select Router"):
             st.session_state['device_selected'] = "Router"
@@ -27,7 +27,7 @@ def second_screen():
     
     # Switch selection
     with col2:
-        switch_img = Image.open("F:\\lablab_hackathon\\Edge Runner\\screens\\assets\\switches.jpg")
+        switch_img = Image.open("screens/assets/switches.jpg")
         st.image(switch_img, caption="Switch")
         if st.button("Select Switch"):
             st.session_state['device_selected'] = "Switch"
@@ -35,7 +35,7 @@ def second_screen():
     
     # Server selection
     with col3:
-        server_img = Image.open("F:\\lablab_hackathon\\Edge Runner\\screens\\assets\\server.jpeg")
+        server_img = Image.open("screens/assets/server.jpeg")
         st.image(server_img, caption="Server")
         if st.button("Select Server"):
             st.session_state['device_selected'] = "Server"

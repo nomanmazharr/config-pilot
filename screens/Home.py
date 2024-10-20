@@ -1,7 +1,7 @@
 import streamlit as st
 
 def first_screen():
-    st.image("F:\\lablab_hackathon\\Edge Runner\\screens\\assets\\logo.jpg", width=150)  # Placeholder for the logo
+    st.image("screens/assets/logo.jpg", width=150)  # Placeholder for the logo
 
     # Menu bar with navigation links using Streamlit buttons
     st.markdown("""
