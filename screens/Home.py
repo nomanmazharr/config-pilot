@@ -3,18 +3,6 @@ import streamlit as st
 def first_screen():
     st.image("screens/assets/logo.jpg", width=150)  # Placeholder for the logo
 
-    # Menu bar with navigation links using Streamlit buttons
-    st.markdown("""
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div style="flex: 1;"></div>
-        <div style="flex: 1; text-align: right;">
-            <a href="#" onclick="st.session_state['screen'] = 'intro';">Routers</a> | 
-            <a href="#" onclick="st.session_state['screen'] = 'device_selection';">Switches</a> | 
-            <a href="#" onclick="st.session_state['screen'] = 'device_selection';">Servers</a>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
     # Step-by-step guide (dummy data)
     st.title("How to Integrate with the App")
     steps = [
