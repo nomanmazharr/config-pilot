@@ -17,16 +17,26 @@ logging.basicConfig(level=logging.ERROR)
 # Function to get GPT-4o Mini response
 def get_gpt4o_mini_response(prompt, max_tokens=100):
     try:
+        from screens.chatbot import get_device_info
+        device, company = get_device_info()
         greetings = ["hi", "hello", "hey", "greetings", "good morning", "good evening"]
         
         if any(greet in prompt.lower() for greet in greetings):
             # Return a friendly greeting if the user's input is casual
             return "Hello! I'm here to help with any router configuration or networking tasks you have. How can I assist you today?"
-
+            
+        
         response = client.chat.completions.create(
             model="meta-llama/Llama-3.2-3B-Instruct-Turbo",
             messages=[
-                {"role": "system", "content": "You are an AI assistant designed to help users configure routers efficiently and accurately."},
+                {"role": "system", "content": 
+                 f"""
+                 You are an AI assistant designed to help users configure routers efficiently and accurately.
+                 The customer is facing the issue with {device} and the company of the router is {company}.
+                 Please analyze the situation thoroughly and suggest effective troubleshooting steps or best practices that could help resolve the issue.
+                Consider potential causes and solutions, and provide detailed explanations or recommendations.
+                 """},
+                
                 {"role": "user", "content": f"I need assistance with router configuration. Specifically, {prompt}."},
             ],
             max_tokens=max_tokens,

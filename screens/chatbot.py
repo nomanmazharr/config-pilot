@@ -1,8 +1,14 @@
 import streamlit as st
 from openai_client import get_gpt4o_mini_response  # Import the OpenAI function
 
+
+def get_device_info():
+    device = st.session_state.get('device_selected', "Unknown Device")
+    company = st.session_state.get('company_selected', "Unknown Company")
+    return device, company
+
 def third_screen():
-    device = st.session_state['device_selected']
+    device, company = get_device_info()
     st.title(f"Configure Your {device}")
     
     # Ask user-specific questions based on the device selected
@@ -11,11 +17,10 @@ def third_screen():
     
     if st.button("Submit"):
         # Prepare the prompt for the model
-        prompt = (f"I am trying to configure a {device}. "
+        prompt = (
                   f"I am facing the following issue: {issue}. "
                   f"I require {config_type.lower()} configurations. "
-                  f"Please analyze the situation thoroughly and suggest effective troubleshooting steps or best practices that could help resolve the issue. "
-                  f"Consider potential causes and solutions, and provide detailed explanations or recommendations.")
+                  )
 
         # Get response from the model
         response = get_gpt4o_mini_response(prompt)

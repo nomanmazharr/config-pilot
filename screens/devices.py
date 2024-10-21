@@ -2,41 +2,59 @@ import streamlit as st
 from PIL import Image
 
 def second_screen():
-    st.image("screens/assets/logo.jpg", width=150)  # Placeholder for the logo
-    
-    # Menu bar
-    st.markdown("""
-    <div style="text-align: right;">
-        <a href='#'>Routers</a> | 
-        <a href='#'>Switches</a> | 
-        <a href='#'>Servers</a>
-    </div>
-    """, unsafe_allow_html=True)
+    col1, col2 = st.columns([1, 3])
+
+    # Image in the first column
+    with col1:
+        st.image("screens/assets/logo.jpg", width=200)  # Placeholder for the logo
+
+    # Text in the second column
+    with col2:
+        st.write("### ConfigPilot")
+        st.write("**Simplify your navigation**")
+        st.write(
+            "ConfigPilot automates and simplifies network device configurations for routers, switches, and servers, "
+            "offering step-by-step guidance for both IT professionals and non-technical users."
+        )
     
     st.title("Choose Your Device")
+
+    # Define images for devices
+    router_img = Image.open("screens/assets/router.jpg")
+    switch_img = Image.open("screens/assets/switches.jpg")
+    server_img = Image.open("screens/assets/server.jpeg")
+
+    # Display images and use st.radio to allow selecting only one device
+    device_options = {
+        "Router": router_img,
+        "Switch": switch_img,
+        "Server": server_img
+    }
     
-    col1, col2, col3 = st.columns(3)
-    
-    # Router selection
-    with col1:
-        router_img = Image.open("screens/assets/router.jpg")
-        st.image(router_img, caption="Router")
-        if st.button("Select Router"):
-            st.session_state['device_selected'] = "Router"
+    # Show the device images as radio options
+    selected_device = st.radio(
+        "Select a device to configure:", 
+        options=list(device_options.keys()),  # Radio options: Router, Switch, Server
+        format_func=lambda device: f"{device}"
+    )
+
+    # Show the selected device's image below the radio buttons
+    st.image(device_options[selected_device], caption=selected_device, width=200)
+
+    # Conditional display for "Router" selection
+    if selected_device == "Router":
+        # Show router company options
+        company = st.selectbox(
+            "Select the router company:",
+            ["Cisco", "Huawei", "TP-Link"]
+        )
+        
+        # Proceed button for Router
+        if st.button("Proceed"):
+            st.session_state['device_selected'] = selected_device
+            st.session_state['company_selected'] = company
             st.session_state['screen'] = 'device_questions'
     
-    # Switch selection
-    with col2:
-        switch_img = Image.open("screens/assets/switches.jpg")
-        st.image(switch_img, caption="Switch")
-        if st.button("Select Switch"):
-            st.session_state['device_selected'] = "Switch"
-            st.session_state['screen'] = 'device_questions'
-    
-    # Server selection
-    with col3:
-        server_img = Image.open("screens/assets/server.jpeg")
-        st.image(server_img, caption="Server")
-        if st.button("Select Server"):
-            st.session_state['device_selected'] = "Server"
-            st.session_state['screen'] = 'device_questions'
+    # Display message for other devices
+    else:
+        st.warning(f"{selected_device} configuration is coming in the next release!")

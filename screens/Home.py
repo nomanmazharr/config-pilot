@@ -1,15 +1,27 @@
 import streamlit as st
 
 def first_screen():
-    st.image("screens/assets/logo.jpg", width=150)  # Placeholder for the logo
+    col1, col2 = st.columns([1, 3])
 
+    # Image in the first column
+    with col1:
+        st.image("screens/assets/logo.jpg", width=200)  # Placeholder for the logo
+
+    # Text in the second column
+    with col2:
+        st.write("### ConfigPilot")
+        st.write("**Simplify your navigation**")
+        st.write(
+            "ConfigPilot automates and simplifies network device configurations for routers, switches, and servers, "
+            "offering step-by-step guidance for both IT professionals and non-technical users."
+        )
     # Step-by-step guide (dummy data)
-    st.title("How to Integrate with the App")
+    st.title("Integrate with the App in Just a Few Steps")
     steps = [
-        "Step 1: Install the app on your device.",
-        "Step 2: Connect the app to your router, switch, or server.",
-        "Step 3: Follow the prompts for automatic configuration.",
-        "Step 4: Monitor and manage your network remotely."
+        "Step 1: Navigate the type of your device.",
+        "Step 2: Select the network device provider.",
+        "Step 3: Ask queries to solve your problem",
+        "Step 4: Monitor and manage your network efficiently."
     ]
     
     for step in steps:
