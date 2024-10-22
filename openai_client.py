@@ -21,7 +21,7 @@ client = Groq(
 logging.basicConfig(level=logging.ERROR)
 
 # Function to get GPT-4o Mini response
-def get_gpt4o_mini_response(user_input, max_tokens=300):
+def get_gpt4o_mini_response(user_input):
     try:
         # Retrieve stored device and company info from session state
         device = st.session_state.get('device_selected', None)
@@ -57,7 +57,6 @@ def get_gpt4o_mini_response(user_input, max_tokens=300):
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_query},
             ],
-            max_tokens=max_tokens,
         )
 
         if response.choices:
