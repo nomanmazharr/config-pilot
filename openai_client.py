@@ -2,6 +2,7 @@ import os
 import logging  # Added for logging
 from dotenv import load_dotenv
 from openai import OpenAI
+import streamlit as st
 
 # Load environment variables from .env file
 load_dotenv()
@@ -15,33 +16,84 @@ client = OpenAI(
 logging.basicConfig(level=logging.ERROR)
 
 # Function to get GPT-4o Mini response
-def get_gpt4o_mini_response(prompt, max_tokens=100):
+def get_gpt4o_mini_response(user_input, max_tokens=300):
     try:
-        from screens.chatbot import get_device_info
-        device, company = get_device_info()
-        greetings = ["hi", "hello", "hey", "greetings", "good morning", "good evening"]
-        
-        if any(greet in prompt.lower() for greet in greetings):
-            # Return a friendly greeting if the user's input is casual
-            return "Hello! I'm here to help with any router configuration or networking tasks you have. How can I assist you today?"
-            
-        
+        # Retrieve stored device and company info from session state
+        device = st.session_state.get('device_selected', None)
+        company = st.session_state.get('company_selected', None)
+
+        # Classify the type of user input (greeting, technical query, or unclear)
+        intent = classify_intent(user_input)
+
+        # Handle greetings separately
+        if intent == "greeting":
+            return "Hello! How can I assist you today with your network configuration?"
+
+        # If device or company info is missing, prompt the user to provide them
+        if not device or not company:
+            return handle_missing_info(device, company)
+
+        # Build a dynamic prompt based on provided context
+        system_prompt = f"""
+        You are a technical assistant specializing in networking devices like routers, switches, and servers.
+        You help users configure their devices and troubleshoot issues.
+        The user is working with a {device or 'network device'}, from a company that may be new or less common: {company or 'an unspecified company'}.
+        Analyze the problem and provide relevant steps to solve the issue.
+        Adjust your response based on the user's input and intent.
+        If the input is unclear, ask clarifying questions to help the user more effectively.
+        """
+
+        user_query = f"""
+        The user has input the following: "{user_input}".
+        Based on this, analyze the issue and provide troubleshooting steps or clarifications.
+        """
+
+        # Call the OpenAI API to generate a response
         response = client.chat.completions.create(
             model="meta-llama/Llama-3.2-3B-Instruct-Turbo",
             messages=[
-                {"role": "system", "content": 
-                 f"""
-                 You are an AI assistant designed to help users configure routers efficiently and accurately.
-                 The customer is facing the issue with {device} and the company of the router is {company}.
-                 Please analyze the situation thoroughly and suggest effective troubleshooting steps or best practices that could help resolve the issue.
-                Consider potential causes and solutions, and provide detailed explanations or recommendations.
-                 """},
-                
-                {"role": "user", "content": f"I need assistance with router configuration. Specifically, {prompt}."},
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_query},
             ],
             max_tokens=max_tokens,
         )
-        return response.choices[0].message.content
+
+        if response.choices:
+            return response.choices[0].message.content
+        else:
+            return "It seems I couldn't generate a specific response. Could you provide more details about your device or issue?"
+
+
     except Exception as e:
-        logging.error(f"Error while generating response: {e}")  # Log the actual error
-        return "Sorry, an error occurred while generating your idea. Please try again later."
+        logging.error(f"Error while generating response: {e}")
+        return "Sorry, an error occurred while generating your response. Please try again later."
+
+def classify_intent(user_input):
+    """
+    Classifies the user's intent based on their input.
+    Could be 'greeting', 'technical', or 'unclear'.
+    """
+    greetings = ["hi", "hello", "hey", "greetings", "good morning", "good evening"]
+    
+    # Check if input is a greeting
+    if any(greet in user_input.lower() for greet in greetings):
+        return "greeting"
+    
+    # Add more sophisticated checks for technical or general questions
+    if "configure" in user_input.lower() or "issue" in user_input.lower():
+        return "technical"
+    
+    return "unclear"
+
+def handle_missing_info(device, company):
+    """
+    Checks for missing device or company information and asks the user to provide them.
+    """
+    if not device:
+        return "Could you please specify which device you're working with (e.g., router, switch, server)?"
+    
+    if not company:
+        return "Could you please provide the brand of the device you're using?"
+
+    return "Could you please specify which device and company you're working with (e.g., router, Cisco)?"
+

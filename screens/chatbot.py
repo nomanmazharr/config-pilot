@@ -1,34 +1,41 @@
 import streamlit as st
 from openai_client import get_gpt4o_mini_response  # Import the OpenAI function
 
-
+# Function to retrieve device information
 def get_device_info():
     device = st.session_state.get('device_selected', "Unknown Device")
     company = st.session_state.get('company_selected', "Unknown Company")
     return device, company
 
+# Main chat screen
 def third_screen():
     device, company = get_device_info()
     st.title(f"Configure Your {device}")
-    
-    # Ask user-specific questions based on the device selected
-    issue = st.text_input(f"What issue are you facing with your {device}?")
-    config_type = st.selectbox("Do you need basic or advanced configurations?", ["Basic", "Advanced"])
-    
-    if st.button("Submit"):
-        # Prepare the prompt for the model
-        prompt = (
-                  f"I am facing the following issue: {issue}. "
-                  f"I require {config_type.lower()} configurations. "
-                  )
 
-        # Get response from the model
+    # Introduce the chat-like interface
+    if 'messages' not in st.session_state:
+        st.session_state.messages = []
+
+    # Display all chat messages
+    for msg in st.session_state.messages:
+        with st.chat_message(msg["role"]):
+            st.markdown(msg["content"])
+
+    # Accept user input as a chat input
+    if user_input := st.chat_input("Ask your question about the configuration..."):
+        # Add user message to session state
+        st.session_state.messages.append({"role": "user", "content": user_input})
+
+        # Generate response using the AI model
+        prompt = (
+            f"I am facing an issue with my {device} from {company}. "
+            f"My query is: {user_input}. "
+        )
         response = get_gpt4o_mini_response(prompt)
         
-        # Display the model's response
-        st.write("### AI Response:")
-        st.write(response)
+        # Add AI response to session state
+        st.session_state.messages.append({"role": "assistant", "content": response})
 
-        # Optionally allow user to refine the input for more tailored results
-        if st.button("Refine Input"):
-            st.session_state['screen'] = 'device_questions'  # Go back to previous screen to refine
+        # Display the AI response
+        with st.chat_message("assistant"):
+            st.markdown(response)
