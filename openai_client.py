@@ -44,8 +44,7 @@ def get_gpt4o_mini_response(user_input, max_tokens=300):
         """
 
         user_query = f"""
-        The user has input the following: "{user_input}".
-        Based on this, analyze the issue and provide troubleshooting steps or clarifications.
+         "{user_input}"
         """
 
         # Call the OpenAI API to generate a response
@@ -96,4 +95,3 @@ def handle_missing_info(device, company):
         return "Could you please provide the brand of the device you're using?"
 
     return "Could you please specify which device and company you're working with (e.g., router, Cisco)?"
-
